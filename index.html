@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cuentas LEEN La Palma</title>
+<meta name="description" content="Gastos del programa La Escuela es Nuestra en SABES La Palma.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;600;700&display=swap">
+<style>
+/* Un cuaderno de cuentas de comité: el saldo manda, el plan dice qué falta, los gastos dicen en qué se fue. */
+:root{
+  --bg:#f3f5f1;--panel:#ffffff;--fg:#1c2a26;--muted:#5a6a64;--line:#d6ddd7;
+  --accent:#0f6b5c;--accent-fg:#ffffff;--soft:#e2efe9;--warn:#9a5b00;--warn-soft:#fbeed3;--danger:#a4302a;--ok:#1f7a3a;--ok-soft:#dcf0e0;
+  --c1:#b5472f;--c2:#0f6b5c;--c3:#2f5fa8;--c4:#7d5aa6;--c5:#c98a1b;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif;--body:"Figtree","Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121a18;--panel:#1b2522;--fg:#e8efeb;--muted:#a0b0a9;--line:#32403b;
+  --accent:#4fc2ab;--accent-fg:#08201b;--soft:#20352f;--warn:#efbd68;--warn-soft:#3a2d14;--danger:#f08a82;--ok:#7fd69a;--ok-soft:#1d3524;
+  --c1:#e98a70;--c2:#4fc2ab;--c3:#7fa8e8;--c4:#b99ae0;--c5:#e0ab4c;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121a18;--panel:#1b2522;--fg:#e8efeb;--muted:#a0b0a9;--line:#32403b;
+  --accent:#4fc2ab;--accent-fg:#08201b;--soft:#20352f;--warn:#efbd68;--warn-soft:#3a2d14;--danger:#f08a82;--ok:#7fd69a;--ok-soft:#1d3524;
+  --c1:#e98a70;--c2:#4fc2ab;--c3:#7fa8e8;--c4:#b99ae0;--c5:#e0ab4c;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 18px/1.45 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:24px}
+header p{margin:0;color:var(--muted)}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.1}
+h2{font-size:1.3rem}
+h3{font-size:1.15rem;line-height:1.2}
+.saldo{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:16px}
+.cifras{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:18px;align-items:end}
+.cifra span{display:block;color:var(--muted);font-size:.95rem}
+.cifra b{font-family:var(--display);font-size:clamp(1.6rem,3.4vw,2.1rem);font-weight:600;font-variant-numeric:tabular-nums}
+.cifra.queda b{font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.05;color:var(--accent);font-weight:700}
+.barra{height:16px;border-radius:8px;background:var(--soft);overflow:hidden;display:flex}
+.barra.chica{height:10px;border-radius:5px}
+.barra i{display:block;height:100%}
+.leyenda{display:flex;flex-wrap:wrap;gap:6px 20px;color:var(--muted);font-size:1.05rem;margin:0}
+.leyenda i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:10px 14px;font-weight:700;font-size:1.05rem;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.cols{display:grid;grid-template-columns:minmax(0,350px) minmax(0,1fr);gap:24px;align-items:start}
+.cols.solo{grid-template-columns:minmax(0,1fr)}
+form{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:13px}
+.campo{display:grid;gap:4px;min-width:0}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-weight:700;font-size:.95rem}
+label small{font-weight:400;color:var(--muted)}
+input,select{width:100%;min-width:0;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:8px 13px}
+button.prim{background:var(--accent);border-color:var(--accent);color:var(--accent-fg);font-weight:700;padding:12px}
+button:disabled{opacity:.6;cursor:wait}
+.check{display:flex;gap:9px;align-items:center;font-weight:400}
+.check input{width:20px;height:20px;flex:none}
+.aviso{margin:0;font-size:.95rem;color:var(--danger)}
+.lista{display:grid;gap:12px;min-width:0}
+.cab{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.filtros{display:flex;flex-wrap:wrap;gap:6px}
+.filtros button{padding:5px 12px;border-radius:99px;font-size:.92rem}
+.filtros button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.gastos{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.gasto{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:4px 12px;padding:15px 16px;border-top:1px solid var(--line)}
+.gasto:first-child{border-top:0}
+.no{font-family:var(--display);font-weight:600;font-size:1.25rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.que{font-weight:700;font-size:1.08rem;overflow-wrap:anywhere}
+.det{color:var(--muted);font-size:1rem;overflow-wrap:anywhere}
+.dinero{text-align:right;white-space:nowrap}
+.dinero b{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.dinero small{display:block;color:var(--muted);font-size:1rem;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}
+.chip{font-size:.92rem;padding:2px 9px;border-radius:99px;background:var(--soft)}
+.chip.falta{background:var(--warn-soft);color:var(--warn);font-weight:700}
+.chip.lista-ok{background:var(--ok-soft);color:var(--ok);font-weight:700}
+.chip.nada{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.acc{background:none;border:0;padding:2px 6px;color:var(--accent);text-decoration:underline;font-size:.88rem}
+.acc.bor{color:var(--danger)}
+.vacio{background:var(--panel);border:1px dashed var(--line);border-radius:14px;padding:30px 22px;text-align:center;color:var(--muted)}
+.vacio b{display:block;color:var(--fg);font-size:1.1rem}
+.pie{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;color:var(--muted);font-size:.92rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:9px;z-index:5}
+/* Plan de trabajo */
+.resumen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.caja{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.caja span{display:block;color:var(--muted);font-size:.95rem}
+.caja b{font-family:var(--display);font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums}
+.caja.alerta{border-color:var(--warn);background:var(--warn-soft)}
+.caja.alerta b,.caja.alerta span{color:var(--warn)}
+.pendientes{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;gap:8px}
+.pendientes p{margin:0;color:var(--muted);font-size:1rem}
+.acciones{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,500px),1fr));gap:16px}
+.accion{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px;align-content:start;border-left:6px solid var(--line)}
+.accion.A{border-left-color:var(--c5)}
+.accion.B{border-left-color:var(--c2)}
+.accion.lista{border-color:var(--ok);border-left-color:var(--ok)}
+.acab{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.acab .n{font-family:var(--display);font-weight:700;color:var(--muted);font-size:1.1rem;margin-right:6px}
+.orig{margin:0;color:var(--muted);font-size:.95rem}
+.montos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.montos span{display:block;color:var(--muted);font-size:.85rem}
+.montos b{font-variant-numeric:tabular-nums;font-size:1.1rem}
+.montos .neg{color:var(--danger)}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.items li{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.items label{font-weight:400;font-size:1rem;display:flex;gap:9px;align-items:center;cursor:pointer;min-width:0;overflow-wrap:anywhere}
+.items input[type=checkbox]{width:20px;height:20px;flex:none;accent-color:var(--accent)}
+.items .hecho span{text-decoration:line-through;color:var(--muted)}
+.agregar{padding:0;border:0;background:none;display:flex;gap:8px}
+.agregar input{padding:6px 9px;font-size:.95rem}
+.agregar button{padding:6px 11px;font-size:.92rem;white-space:nowrap}
+.apie{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:.92rem;align-items:center}
+@media (max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){.cifras{grid-template-columns:1fr 1fr}.cifra.queda{grid-column:1/-1}.gasto{grid-template-columns:34px minmax(0,1fr)}.dinero{grid-column:2;text-align:left}.dinero small{display:block;margin-left:0}.resumen{grid-template-columns:1fr 1fr}.montos b{font-size:1rem}}
+
+body{margin:0}
+.act{margin:0;color:var(--muted);font-size:.95rem}
+</style>
+</head>
+<body>
+<div id="app"><noscript>Activa JavaScript para ver los gastos.</noscript></div>
+<script type="application/json" id="datos">{"recurso": 600000, "actualizado": "2026-11-24", "gastos": [{"n": 1, "fecha": "2026-10-05", "concepto": "Material de plomeria", "quien": "MIFERRECHAVEZ", "monto": 4187.56, "tipo": "N", "acc": "B", "comp": true}, {"n": 2, "fecha": "2026-10-05", "concepto": "Pago de plomeria", "quien": "Fernando Peña Moreno", "monto": 7000, "tipo": "L", "acc": "B", "comp": true}, {"n": 3, "fecha": "2026-10-05", "concepto": "Material de plomeria", "quien": "Ferretea Malanche", "monto": 948, "tipo": "N", "acc": "B", "comp": true}, {"n": 4, "fecha": "2026-10-06", "concepto": "Material de plomeria", "quien": "Ferre Chávez", "monto": 1663, "tipo": "N", "acc": "B", "comp": true}, {"n": 5, "fecha": "2026-10-21", "concepto": "Material de plomeria", "quien": "Ferre Chávez", "monto": 1515, "tipo": "N", "acc": "B", "comp": true}, {"n": 6, "fecha": "2026-10-21", "concepto": "Compra de sonido", "quien": "Beat Music", "monto": 25530, "tipo": "N", "acc": "A", "comp": true}, {"n": 7, "fecha": "2026-11-22", "concepto": "Membresía", "quien": "Office Depot", "monto": 759, "tipo": "T", "acc": "A", "comp": true}, {"n": 8, "fecha": "2026-10-22", "concepto": "AIO ACER ALL IN ONE 27", "quien": "Office Depot", "monto": 21999, "tipo": "T", "acc": "A", "comp": true}, {"n": 9, "fecha": "2026-10-22", "concepto": "2 AIO ACER ALL IN ONE 27; IMPRESORA BROTHER TW930; 3 ESCRITORIOS; 4 SILLAS; 15 HOJAS TAMAÑO CARTA; ARMADO DE MUEBLE", "quien": "Office Depot", "monto": 63500, "tipo": "T", "acc": "A", "comp": true}, {"n": 10, "fecha": "2026-10-26", "concepto": "Proyector", "quien": "Office Depot", "monto": 5239.98, "tipo": "T", "acc": "A", "comp": true}, {"n": 11, "fecha": "2026-11-29", "concepto": "Cables para el sonido", "quien": "MIFERRECHAVEZ", "monto": 375, "tipo": "T", "acc": "A", "comp": true}, {"n": 12, "fecha": "2026-11-23", "concepto": "Instalación de malla; portón; reparación de puerta de eleveador; instalación de protección y corte de varillas; puerta de dirección; instalación de concertina; chapas.", "quien": "Herminio Cruz Hernández", "monto": 141600, "tipo": "N", "acc": "B", "comp": true}, {"n": 13, "fecha": "2026-10-20", "concepto": "Impermeabilización.", "quien": "Alberto Estrada Patiño", "monto": 112000, "tipo": "L", "acc": "B", "comp": false}]}</script>
+<script>
+(function(){
+var d=JSON.parse(document.getElementById("datos").textContent);
+var TIPOS={T:"Ticket",R:"Recibo simple",N:"Nota de venta",L:"Lista de raya",F:"Factura"};
+var PLUR={T:"Tickets",R:"Recibos",N:"Notas de venta",L:"Listas de raya",F:"Facturas"};
+var USOS={A:"A · Equipamiento",B:"B · Rehabilitación o ampliación"};
+var COLOR={A:"var(--c5)",B:"var(--c2)"};
+var MESES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+var MESL=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var pesos=function(n){return "$"+Number(n).toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2})};
+var corto=function(n){return "$"+Number(n).toLocaleString("es-MX",{minimumFractionDigits:Number(n)%1?2:0,maximumFractionDigits:2})};
+var fecha=function(f){var p=String(f).split("-");return p.length===3?Number(p[2])+" "+MESES[Number(p[1])-1]+" "+p[0]:f};
+var fechaLarga=function(f){var p=String(f).split("-");return p.length===3?Number(p[2])+" de "+MESL[Number(p[1])-1]+" de "+p[0]:f};
+var r=function(n){return Math.round(n*100)/100};
+var suma=function(l){return r(l.reduce(function(s,g){return s+g.monto},0))};
+var gs=d.gastos.slice().sort(function(a,b){return a.n-b.n});
+var saldo={},acum=d.recurso;gs.forEach(function(g){acum=r(acum-g.monto);saldo[g.n]=acum});
+var filtro="todos";try{filtro=sessionStorage.getItem("leen-pub-filtro")||"todos"}catch(e){}
+var app=document.getElementById("app");
+function pintar(){
+  var gastado=suma(gs),queda=r(d.recurso-gastado);
+  var a=suma(gs.filter(function(g){return g.acc==="A"})),b=suma(gs.filter(function(g){return g.acc==="B"}));
+  var base=Math.max(d.recurso,gastado)||1;
+  var faltan=gs.filter(function(g){return !g.comp}).length;
+  var chips=[["todos","Todos"],["A","Equipamiento"],["B","Rehabilitación o ampliación"]].concat(Object.keys(PLUR).filter(function(k){return gs.some(function(g){return g.tipo===k})}).map(function(k){return [k,PLUR[k]]}));
+  if(faltan)chips.push(["falta","Falta comprobante ("+faltan+")"]);
+  if(!chips.some(function(c){return c[0]===filtro}))filtro="todos";
+  var vis=gs.filter(function(g){return filtro==="todos"||(filtro==="falta"?!g.comp:(filtro==="A"||filtro==="B")?g.acc===filtro:g.tipo===filtro)});
+  var lista=!gs.length?'<div class="vacio"><b>Todavía no hay gastos anotados</b></div>'
+    :'<ol class="gastos">'+vis.map(function(g){
+      return '<li class="gasto"><div class="no">'+g.n+'</div><div style="min-width:0"><div class="que">'+esc(g.concepto)+'</div><div class="det">'+esc(g.quien)+' · '+fecha(g.fecha)+'</div>'
+      +'<div class="chips"><span class="chip"><i class="dot" style="background:'+(COLOR[g.acc]||"var(--muted)")+'"></i>'+(USOS[g.acc]||"Sin clasificar")+'</span><span class="chip">'+(TIPOS[g.tipo]||"")+'</span>'+(g.comp?"":'<span class="chip falta">Falta comprobante</span>')+'</div></div>'
+      +'<div class="dinero"><b>'+pesos(g.monto)+'</b><small>Quedaban '+pesos(saldo[g.n])+'</small></div></li>'}).join("")+'</ol>';
+  app.innerHTML='<div class="wrap"><header><h1>Cuentas de La Escuela es Nuestra</h1><p>SABES La Palma · Ejercicio 2026 · Registro del comité</p></header>'
+  +'<section class="saldo" aria-label="Resumen del recurso"><div class="cifras"><div class="cifra queda"><span>Queda por ejercer</span><b>'+pesos(queda)+'</b></div><div class="cifra"><span>Recurso asignado</span><b>'+corto(d.recurso)+'</b></div><div class="cifra"><span>Ya gastado, '+gs.length+(gs.length===1?" gasto":" gastos")+'</span><b>'+corto(gastado)+'</b></div></div>'
+  +'<div class="barra" role="img" aria-label="Equipamiento '+pesos(a)+', rehabilitación o ampliación '+pesos(b)+', sin gastar '+pesos(Math.max(queda,0))+'"><i style="width:'+(a/base*100)+'%;background:var(--c5)"></i><i style="width:'+(b/base*100)+'%;background:var(--c2)"></i></div>'
+  +'<p class="leyenda"><span><i style="background:var(--c5)"></i>A · Equipamiento: '+pesos(a)+'</span><span><i style="background:var(--c2)"></i>B · Rehabilitación o ampliación: '+pesos(b)+'</span></p></section>'
+  +'<section class="lista"><div class="cab"><h2>Gastos</h2><div class="filtros">'+chips.map(function(c){return '<button type="button" data-filtro="'+c[0]+'" aria-pressed="'+(filtro===c[0])+'">'+esc(c[1])+'</button>'}).join("")+'</div></div>'+lista
+  +'<p class="act">Actualizado al '+fechaLarga(d.actualizado)+'.</p></section></div>';
+}
+app.addEventListener("click",function(e){var t=e.target.closest("button[data-filtro]");if(!t)return;filtro=t.dataset.filtro;try{sessionStorage.setItem("leen-pub-filtro",filtro)}catch(x){}pintar()});
+pintar();
+})();
+</script>
+</body>
+</html>
